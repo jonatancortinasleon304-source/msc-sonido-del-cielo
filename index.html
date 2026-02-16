@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ministerio Sonido del Cielo - La Paz</title>
+<style>
+  :root{
+    --bg1:#163a7a;
+    --bg2:#2a6bb7;
+    --card:rgba(255,255,255,0.14);
+    --card2:rgba(0,0,0,0.28);
+    --stroke:rgba(255,255,255,0.22);
+    --text:#ffffff;
+    --muted:rgba(255,255,255,0.82);
+    --danger:#ff6b6b;
+    --ok:#51cf66;
+    --warn:#ffd43b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text);
+    background: radial-gradient(1200px 700px at 20% 0%, rgba(255,255,255,0.18), transparent 55%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+    padding: 18px;
+  }
+  header{
+    text-align:center;
+    margin-bottom: 14px;
+  }
+  header h1{margin: 6px 0 0; font-size: 22px; letter-spacing: .3px;}
+  header h2{margin: 6px 0 0; font-size: 14px; font-weight:600; opacity:.92;}
+  header .sub{margin-top: 6px; font-size: 12px; opacity:.9;}
+  .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .card{
+    width:100%;
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 12px;
+    backdrop-filter: blur(6px);
+  }
+  .menu-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:10px;
+  }
+  button, .btn{
+    width:100%;
+    padding: 14px 14px;
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.16);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 650;
+    cursor: pointer;
+  }
+  button:hover{ background: rgba(255,255,255,0.26); }
+  .btn-secondary{
+    background: rgba(0,0,0,0.22);
+  }
+  .btn-danger{
+    background: rgba(255, 0, 0, 0.18);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+  .btn-ok{
+    background: rgba(0, 255, 120, 0.16);
+  }
+  .pill{
+    display:inline-block;
+    padding: 6px 10px;
+    border: 1px solid var(--stroke);
+    border-radius: 999px;
+    font-size: 12px;
+    opacity:.95;
+    background: rgba(0,0,0,0.18);
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top: 10px;
+  }
+  .toolbar .half{flex: 1 1 180px;}
+  input, select, textarea{
+    width:100%;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: rgba(0,0,0,0.18);
+    color: var(--text);
+    outline:none;
+    font-size: 14px;
+  }
+  textarea{min-height: 150px; resize: vertical;}
+  label{font-size: 12px; opacity:.92; display:block; margin: 10px 0 6px;}
+  .section{display:none;}
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom: 10px;
+  }
+  .topbar .left{display:flex; gap:10px; align-items:center;}
+  .topbar .title{
+    font-size: 16px;
+    font-weight: 750;
+  }
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top: 10px;
+  }
+  .song{
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.18);
+    border: 1px solid var(--stroke);
+  }
+  .song .name{font-weight: 780; font-size: 15px;}
+  .song .meta{margin-top: 6px; font-size: 12px; opacity:.92; display:flex; gap:8px; flex-wrap:wrap;}
+  .song .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px;}
+  .song .actions button{padding: 10px; font-size: 13px;}
+  .muted{opacity:.9; font-size: 12px;}
+  .grid-2{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:10px;
+  }
+  @media (min-width: 720px){
+    body{max-width: 860px; margin: 0 auto; padding: 22px;}
+    .menu-grid{grid-template-columns: 1fr 1fr;}
+    .grid-2{grid-template-columns: 1fr 1fr;}
+  }
+  .hint{
+    font-size: 12px;
+    opacity: .9;
+    line-height: 1.35;
+  }
+  .hr{
+    height:1px; background: rgba(255,255,255,0.18); margin: 12px 0;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    padding: 2px 6px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    background: rgba(0,0,0,0.22);
+  }
+  .toast{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 18px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: white;
+    font-size: 13px;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .25s ease;
+    z-index: 9999;
+  }
+  .toast.show{opacity:1;}
+  a{color: rgba(255,255,255,0.95);}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ministerio Sonido del Cielo</h1>
+  <h2>La Paz</h2>
+  <div class="sub">Sistema interno de alabanzas (para el equipo)</div>
+</header>
+
+<!-- HOME -->
+<section id="home" class="section" style="display:block;">
+  <div class="card">
+    <div class="menu-grid">
+      <button onclick="openCategory('Júbilo')">🎉 Alabanzas de Júbilo</button>
+      <button onclick="openCategory('Adoración')">🙌 Adoración</button>
+      <button onclick="openCategory('Guerra')">🔥 Guerra</button>
+      <button onclick="openCategory('Ministración')">💛 Ministración</button>
+      <button onclick="openCategory('Por ensayar')">🆕 Por Ensayar</button>
+      <button onclick="openCategory('Activas')">✅ Activas</button>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="toolbar">
+      <div class="half">
+        <button class="btn-secondary" onclick="openAddSong()">➕ Añadir alabanza</button>
+      </div>
+      <div class="half">
+        <button class="btn-secondary" onclick="openTools()">🧰 Herramientas (compartir / backup)</button>
+      </div>
+    </div>
+
+    <p class="hint" style="margin-top:12px;">
+      Todo lo que guardes aquí se queda en <b>este móvil</b> (guardado automático). Para que lo tengáis también
+      <b>tú, Rocky y Luis Ángel</b>, usad <b>Herramientas</b> → <b>Exportar</b> y luego <b>Importar</b> en los otros móviles.
+    </p>
+  </div>
+</section>
+
+<!-- CATEGORY LIST -->
+<section id="category" class="section">
+  <div class="topbar">
+    <div class="left">
+      <button class="btn-secondary" style="width:auto; padding:10px 12px;" onclick="goHome()">⬅</button>
+      <div class="title" id="catTitle">Categoría</div>
+    </div>
+    <div class="pill" id="catCount">0</div>
+  </div>
+
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <label>Buscar</label>
+        <input id="searchBox" placeholder="Buscar por nombre, tono, notas..." oninput="renderCategory()" />
+      </div>
+      <div>
+        <label>Orden</label>
+        <select id="sortBy" onchange="renderCategory()">
+          <option value="name">Nombre (A-Z)</option>
+          <option value="updated">Última edición</option>
+          <option value="tone">Tono</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-secondary" onclick="openAddSong(currentCategory)">➕ Añadir en esta categoría</button>
+    </div>
+
+    <div class="list" id="songList"></div>
+    <div id="emptyState" class="muted" style="display:none; margin-top:10px;">
+      Aún no hay alabanzas aquí. Pulsa <span class="kbd">Añadir</span> para crear la primera.
+    </div>
+  </div>
+</section>
+
+<!-- SONG VIEW -->
+<section id="songView" class="section">
+  <div class="topbar">
+    <div class="left">
+      <button class="btn-secondary" style="width:auto; padding:10px 12px;" onclick="backToCategory()">⬅</button>
+      <div class="title" id="viewName">Alabanza</div>
+    </div>
+    <div class="pill" id="viewCategory">Categoría</div>
+  </div>
+
+  <div class="card">
+    <div class="muted" id="viewMeta"></div>
+    <div class="hr"></div>
+
+    <div class="grid-2">
+      <div>
+        <div class="pill">Tono</div>
+        <div style="margin-top:6px; font-size:18px; font-weight:800;" id="viewTone">—</div>
+      </div>
+      <div>
+        <div class="pill">Tempo</div>
+        <div style="margin-top:6px; font-size:18px; font-weight:800;" id="viewTempo">—</div>
+      </div>
+    </div>
+
+    <label style="margin-top:14px;">Estructura</label>
+    <div class="song" id="viewStructure" style="white-space:pre-wrap;">—</div>
+
+    <label>Letra</label>
+    <div class="song" id="viewLyrics" style="white-space:pre-wrap;">—</div>
+
+    <label>Notas</label>
+    <div class="song" id="viewNotes" style="white-space:pre-wrap;">—</div>
+
+    <div id="viewLinkWrap" style="margin-top:12px; display:none;">
+      <span class="pill">Link</span>
+      <div style="margin-top:8px;"><a id="viewLink" href="#" target="_blank" rel="noopener">Abrir</a></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-ok" onclick="openEditSong(currentSongId)">✏️ Editar</button>
+      <button class="btn-danger" onclick="deleteSong(currentSongId)">🗑️ Eliminar</button>
+      <button class="btn-secondary" onclick="duplicateSong(currentSongId)">🧾 Duplicar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ADD/EDIT FORM -->
+<section id="songForm" class="section">
+  <div class="topbar">
+    <div class="left">
+      <button class="btn-secondary" style="width:auto; padding:10px 12px;" onclick="cancelForm()">⬅</button>
+      <div class="title" id="formTitle">Añadir alabanza</div>
+    </div>
+    <div class="pill" id="formMode">Nuevo</div>
+  </div>
+
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <label>Nombre</label>
+        <input id="fName" placeholder="Ej: Tu presencia es mi hogar" />
+      </div>
+      <div>
+        <label>Categoría</label>
+        <select id="fCategory">
+          <option>Júbilo</option>
+          <option>Adoración</option>
+          <option>Guerra</option>
+          <option>Ministración</option>
+          <option>Por ensayar</option>
+          <option>Activas</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Tono</label>
+        <input id="fTone" placeholder="Ej: Sol (G)" />
+      </div>
+      <div>
+        <label>Tempo (BPM)</label>
+        <input id="fTempo" placeholder="Ej: 128" inputmode="numeric" />
+      </div>
+    </div>
+
+    <label>Estructura</label>
+    <textarea id="fStructure" placeholder="Ej:\nIntro\nVerso 1\nCoro\nVerso 2\nCoro x2\nPuente\nCoro final"></textarea>
+
+    <label>Letra</label>
+    <textarea id="fLyrics" placeholder="Pega aquí la letra (si es con derechos, úsalo solo internamente)."></textarea>
+
+    <label>Notas</label>
+    <textarea id="fNotes" placeholder="Notas del ministerio: entradas, repeticiones, modulación, etc."></textarea>
+
+    <label>Link (opcional)</label>
+    <input id="fLink" placeholder="YouTube / audio / drive..." />
+
+    <div class="toolbar">
+      <button class="btn-ok" onclick="saveSong()">💾 Guardar</button>
+      <button class="btn-secondary" onclick="cancelForm()">Cancelar</button>
+    </div>
+
+    <p class="hint" style="margin-top:10px;">
+      Tip: para proyectar letras con rapidez, podéis copiar la letra aquí y abrir la alabanza en pantalla completa desde el móvil.
+    </p>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools" class="section">
+  <div class="topbar">
+    <div class="left">
+      <button class="btn-secondary" style="width:auto; padding:10px 12px;" onclick="goHome()">⬅</button>
+      <div class="title">Herramientas</div>
+    </div>
+    <div class="pill">Backup</div>
+  </div>
+
+  <div class="card">
+    <p class="hint">
+      Para que lo tengáis en <b>tres móviles</b> (tú, Rocky y Luis Ángel):
+      <br/>1) En el móvil principal: <b>Exportar</b> → se descarga un archivo <span class="kbd">.json</span>
+      <br/>2) En los otros móviles: <b>Importar</b> → seleccionáis ese archivo
+    </p>
+
+    <div class="toolbar">
+      <button class="btn-ok" onclick="exportData()">⬇️ Exportar (JSON)</button>
+      <label class="btn btn-secondary" style="display:inline-block; width:100%; text-align:center; cursor:pointer;">
+        ⬆️ Importar (JSON)
+        <input id="importFile" type="file" accept="application/json" style="display:none;" onchange="importData(event)" />
+      </label>
+    </div>
+
+    <div class="hr"></div>
+
+    <p class="hint"><b>Opcional:</b> Si queréis empezar con ejemplos, podéis cargar 3 alabanzas de muestra.</p>
+    <div class="toolbar">
+      <button class="btn-secondary" onclick="loadSample()">✨ Cargar ejemplo</button>
+      <button class="btn-danger" onclick="wipeAll()">🧨 Borrar todo (este móvil)</button>
+    </div>
+
+    <p class="hint" style="margin-top:10px;">
+      Nota: este sistema funciona sin internet y guarda en el móvil. No hay contraseña (uso interno).
+    </p>
+  </div>
+</section>
+
+<div id="toast" class="toast">Listo</div>
+
+<script>
+/* ---------- STORAGE ---------- */
+const STORAGE_KEY = "msc_lapaz_songs_v1";
+
+/* ---------- CLOUD SYNC (Glitch) ---------- */
+const CLOUD_PIN = "1234"; // 🔐 Cambia este PIN aquí y en server.js (mismo valor)
+const CLOUD_API_BASE = ""; // mismo dominio (Glitch)
+
+async function cloudFetchSongs(){
+  const res = await fetch(`${CLOUD_API_BASE}/api/songs?pin=${encodeURIComponent(CLOUD_PIN)}`);
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.error || "Error cloudFetchSongs");
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data.songs || []));
+  return Array.isArray(data.songs) ? data.songs : [];
+}
+
+async function cloudPushSongs(list){
+  const res = await fetch(`${CLOUD_API_BASE}/api/songs`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ pin: CLOUD_PIN, songs: list })
+  });
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.error || "Error cloudPushSongs");
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  return true;
+}
+
+function nowISO(){ return new Date().toISOString(); }
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1400);
+}
+
+function loadSongs(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    const data = JSON.parse(raw);
+    if(Array.isArray(data)) return data;
+    return [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveSongs(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function uid(){
+  return "s_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+
+/* ---------- NAV ---------- */
+let currentCategory = null;
+let currentSongId = null;
+let backCategory = null;
+let formEditingId = null;
+
+function show(id){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+}
+
+function goHome(){
+  currentCategory = null;
+  currentSongId = null;
+  formEditingId = null;
+  show("home");
+}
+
+function openCategory(cat){
+  currentCategory = cat;
+  document.getElementById("catTitle").textContent = cat;
+  document.getElementById("searchBox").value = "";
+  document.getElementById("sortBy").value = "name";
+  show("category");
+  
+// Sincroniza desde la nube y luego renderiza
+cloudFetchSongs().then(()=>renderCategory()).catch(()=>renderCategory());
+return;
+}
+
+function backToCategory(){
+  if(currentCategory) openCategory(currentCategory);
+  else goHome();
+}
+
+function openTools(){
+  show("tools");
+}
+
+function openAddSong(preCat){
+  formEditingId = null;
+  document.getElementById("formTitle").textContent = "Añadir alabanza";
+  document.getElementById("formMode").textContent = "Nuevo";
+  clearForm();
+  if(preCat) document.getElementById("fCategory").value = preCat;
+  show("songForm");
+}
+
+function openEditSong(id){
+  const songs = loadSongs();
+  const s = songs.find(x=>x.id===id);
+  if(!s){ toast("No encontrada"); return; }
+  formEditingId = id;
+  document.getElementById("formTitle").textContent = "Editar alabanza";
+  document.getElementById("formMode").textContent = "Edición";
+  document.getElementById("fName").value = s.name || "";
+  document.getElementById("fCategory").value = s.category || "Adoración";
+  document.getElementById("fTone").value = s.tone || "";
+  document.getElementById("fTempo").value = s.tempo || "";
+  document.getElementById("fStructure").value = s.structure || "";
+  document.getElementById("fLyrics").value = s.lyrics || "";
+  document.getElementById("fNotes").value = s.notes || "";
+  document.getElementById("fLink").value = s.link || "";
+  show("songForm");
+}
+
+function cancelForm(){
+  if(currentSongId) openSong(currentSongId);
+  else if(currentCategory) openCategory(currentCategory);
+  else goHome();
+}
+
+function clearForm(){
+  ["fName","fTone","fTempo","fStructure","fLyrics","fNotes","fLink"].forEach(id=>{
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("fCategory").value = currentCategory || "Adoración";
+}
+
+/* ---------- RENDER ---------- */
+function renderCategory(){
+  const songs = loadSongs().filter(s => (s.category || "") === currentCategory);
+  const q = (document.getElementById("searchBox").value || "").trim().toLowerCase();
+  let filtered = songs.filter(s => {
+    if(!q) return true;
+    const hay = [
+      s.name, s.tone, s.tempo, s.structure, s.lyrics, s.notes, s.link
+    ].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
+  const sortBy = document.getElementById("sortBy").value;
+  filtered.sort((a,b)=>{
+    if(sortBy==="updated") return (b.updated_at||"").localeCompare(a.updated_at||"");
+    if(sortBy==="tone") return (a.tone||"").localeCompare(b.tone||"");
+    return (a.name||"").localeCompare(b.name||"");
+  });
+
+  document.getElementById("catCount").textContent = filtered.length.toString();
+  const list = document.getElementById("songList");
+  list.innerHTML = "";
+
+  const empty = document.getElementById("emptyState");
+  empty.style.display = filtered.length ? "none" : "block";
+
+  filtered.forEach(s=>{
+    const div = document.createElement("div");
+    div.className = "song";
+    div.innerHTML = `
+      <div class="name">${escapeHtml(s.name || "Sin nombre")}</div>
+      <div class="meta">
+        <span class="pill">Tono: ${escapeHtml(s.tone || "—")}</span>
+        <span class="pill">Tempo: ${escapeHtml(s.tempo || "—")}</span>
+        <span class="pill">Editado: ${formatDate(s.updated_at || s.created_at)}</span>
+      </div>
+      <div class="actions">
+        <button class="btn-ok" onclick="openSong('${s.id}')">Abrir</button>
+        <button class="btn-secondary" onclick="openEditSong('${s.id}')">Editar</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function openSong(id){
+  const songs = loadSongs();
+  const s = songs.find(x=>x.id===id);
+  if(!s){ toast("No encontrada"); return; }
+  currentSongId = id;
+
+  document.getElementById("viewName").textContent = s.name || "Alabanza";
+  document.getElementById("viewCategory").textContent = s.category || "—";
+
+  const meta = [];
+  meta.push(`Creada: ${formatDate(s.created_at)}`);
+  meta.push(`Editada: ${formatDate(s.updated_at || s.created_at)}`);
+  document.getElementById("viewMeta").textContent = meta.join(" · ");
+
+  document.getElementById("viewTone").textContent = s.tone || "—";
+  document.getElementById("viewTempo").textContent = s.tempo || "—";
+  document.getElementById("viewStructure").textContent = s.structure || "—";
+  document.getElementById("viewLyrics").textContent = s.lyrics || "—";
+  document.getElementById("viewNotes").textContent = s.notes || "—";
+
+  const wrap = document.getElementById("viewLinkWrap");
+  if(s.link && s.link.trim()){
+    wrap.style.display = "block";
+    const a = document.getElementById("viewLink");
+    a.href = s.link.trim();
+    a.textContent = s.link.trim();
+  }else{
+    wrap.style.display = "none";
+  }
+
+  show("songView");
+}
+
+/* ---------- CRUD ---------- */
+function saveSong(){
+  const name = document.getElementById("fName").value.trim();
+  const category = document.getElementById("fCategory").value;
+  const tone = document.getElementById("fTone").value.trim();
+  const tempo = document.getElementById("fTempo").value.trim();
+  const structure = document.getElementById("fStructure").value.trim();
+  const lyrics = document.getElementById("fLyrics").value.trim();
+  const notes = document.getElementById("fNotes").value.trim();
+  const link = document.getElementById("fLink").value.trim();
+
+  if(!name){
+    toast("Pon un nombre");
+    return;
+  }
+
+  const songs = loadSongs();
+  if(formEditingId){
+    const idx = songs.findIndex(x=>x.id===formEditingId);
+    if(idx===-1){ toast("No encontrada"); return; }
+    songs[idx] = {
+      ...songs[idx],
+      name, category, tone, tempo, structure, lyrics, notes, link,
+      updated_at: nowISO()
+    };
+    saveSongs(songs);
+    toast("Guardado");
+    currentCategory = category;
+    openSong(formEditingId);
+  }else{
+    const s = {
+      id: uid(),
+      name, category, tone, tempo, structure, lyrics, notes, link,
+      created_at: nowISO(),
+      updated_at: nowISO()
+    };
+    songs.push(s);
+    saveSongs(songs);
+    toast("Añadida");
+    currentCategory = category;
+    openSong(s.id);
+  }
+}
+
+function deleteSong(id){
+  if(!confirm("¿Eliminar esta alabanza?")) return;
+  const songs = loadSongs().filter(x=>x.id!==id);
+  saveSongs(songs);
+  toast("Eliminada");
+  openCategory(currentCategory);
+}
+
+function duplicateSong(id){
+  const songs = loadSongs();
+  const s = songs.find(x=>x.id===id);
+  if(!s){ toast("No encontrada"); return; }
+  const copy = {...s, id: uid(), name: (s.name || "Alabanza") + " (copia)", created_at: nowISO(), updated_at: nowISO()};
+  songs.push(copy);
+  saveSongs(songs);
+  toast("Duplicada");
+  openSong(copy.id);
+}
+
+/* ---------- EXPORT / IMPORT ---------- */
+function exportData(){
+  const data = {
+    app: "Ministerio Sonido del Cielo - La Paz",
+    version: 1,
+    exported_at: nowISO(),
+    songs: loadSongs()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "msc_lapaz_alabanzas_backup.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast("Exportado");
+}
+
+function importData(evt){
+  const file = evt.target.files && evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      const list = Array.isArray(data) ? data : (data.songs || []);
+      if(!Array.isArray(list)) throw new Error("Formato inválido");
+      // Normalizar: asegurar id y fechas
+      const normalized = list.map(s => ({
+        id: s.id || uid(),
+        name: s.name || "Sin nombre",
+        category: s.category || "Adoración",
+        tone: s.tone || "",
+        tempo: s.tempo || "",
+        structure: s.structure || "",
+        lyrics: s.lyrics || "",
+        notes: s.notes || "",
+        link: s.link || "",
+        created_at: s.created_at || nowISO(),
+        updated_at: s.updated_at || s.created_at || nowISO()
+      }));
+      saveSongs(normalized);
+      toast("Importado");
+      goHome();
+    }catch(e){
+      alert("No se pudo importar. Asegúrate de usar el archivo JSON exportado desde esta app.");
+    }finally{
+      evt.target.value = "";
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function wipeAll(){
+  if(!confirm("Esto borrará TODO en este móvil. ¿Seguro?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  toast("Borrado");
+  goHome();
+}
+
+function loadSample(){
+  const samples = [
+    {
+      id: uid(),
+      name: "Ejemplo - Alabanza de Júbilo",
+      category: "Júbilo",
+      tone: "Sol (G)",
+      tempo: "128",
+      structure: "Intro\nVerso\nCoro\nPuente\nCoro final",
+      lyrics: "Aquí va la letra (uso interno)",
+      notes: "Notas: subir intensidad en el puente si la iglesia responde.",
+      link: "",
+      created_at: nowISO(),
+      updated_at: nowISO()
+    },
+    {
+      id: uid(),
+      name: "Ejemplo - Adoración",
+      category: "Adoración",
+      tone: "Re (D)",
+      tempo: "72",
+      structure: "Intro suave\nVerso\nCoro\nCoro",
+      lyrics: "Aquí va la letra (uso interno)",
+      notes: "Dejar espacios, respirar. Ideal para ministración.",
+      link: "",
+      created_at: nowISO(),
+      updated_at: nowISO()
+    },
+    {
+      id: uid(),
+      name: "Ejemplo - Por ensayar",
+      category: "Por ensayar",
+      tone: "La (A)",
+      tempo: "95",
+      structure: "Intro\nVerso 1\nCoro\nVerso 2\nCoro\nPuente\nCoro",
+      lyrics: "Aquí va la letra (uso interno)",
+      notes: "Ensayar entradas del coro y final con corte.",
+      link: "",
+      created_at: nowISO(),
+      updated_at: nowISO()
+    }
+  ];
+  saveSongs(samples);
+  toast("Ejemplo cargado");
+  goHome();
+}
+
+/* ---------- UTILS ---------- */
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function formatDate(iso){
+  if(!iso) return "—";
+  try{
+    const d = new Date(iso);
+    const dd = String(d.getDate()).padStart(2,"0");
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const yy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mi = String(d.getMinutes()).padStart(2,"0");
+    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+  }catch(e){
+    return "—";
+  }
+}
+
+/* ---------- START ---------- */
+// Sincroniza desde la nube al abrir
+cloudFetchSongs().catch(()=>{});
+goHome();
+</script>
+</body>
+</html>
